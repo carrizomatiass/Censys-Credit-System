@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="CreditSystem.Api/CreditSystem.Api.csproj" Id="3d11c720-dc97-4ea6-a051-2ccc46f08ff6" />
+  <Project Path="CreditSystem.Application/CreditSystem.Application.csproj" Id="d7c12dcd-fbf6-4fe5-af48-ae08c36bf507" />
+  <Project Path="CreditSystem.Domain/CreditSystem.Domain.csproj" Id="1d0a98e8-57d9-405f-89dc-972abf7423b7" />
+  <Project Path="CreditSystem.Infrastructure/CreditSystem.Infrastructure.csproj" Id="826bff88-49cf-4fa4-ae0a-e2a83d77a757" />
+  <Project Path="CreditSystem.IntegrationTests/CreditSystem.IntegrationTests.csproj" Id="693b3f66-9912-4b7d-8256-478808e7bdb4" />
+  <Project Path="CreditSystem.UnitTests/CreditSystem.UnitTests.csproj" Id="a0fe9ece-1cea-4624-a4b4-2dbd2751f414" />
+</Solution>
