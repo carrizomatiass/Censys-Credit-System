@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CreditSystem.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,8 @@ namespace CreditSystem.Domain.Interfaces
 {
     public interface ICreditApplicationRepository
     {
+        Task<CreditApplication?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task AddAsync(CreditApplication application, CancellationToken cancellationToken = default);
+        Task UpdateAsync(CreditApplication application, CancellationToken cancellationToken = default);
     }
 }
