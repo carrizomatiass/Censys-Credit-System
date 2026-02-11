@@ -20,11 +20,11 @@ namespace CreditSystem.Application.Steps
 
             //Negocio: monto solicitado minimo
             if (application.RequestedAmount < 1000)
-                return new StepResult(false, "Requested amount is below the minimum threshold of $1,000.");
+                return new StepResult(false, "El monto solicitado es inferior al minimo de $1,000");
 
             //Negocio: validar que el nombre del cliente no este vacio
             if (string.IsNullOrWhiteSpace(application.CustomerName))
-                return new StepResult(false, "Customer name is required.");
+                return new StepResult(false, "El nombre del cliente es obligatorio");
 
             return new StepResult(true);
         }

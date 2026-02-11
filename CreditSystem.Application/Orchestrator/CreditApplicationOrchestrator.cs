@@ -45,7 +45,7 @@ namespace CreditSystem.Application.Orchestrator
             var application = await _repository.GetByIdAsync(applicationId, cancellationToken);
             if (application is null)
             {
-                _logger.LogError("Credit application {ApplicationId} not found.", applicationId);
+                _logger.LogError("Solicitud de credito {ApplicationId} no encontrada", applicationId);
                 return;
             }
 
@@ -57,30 +57,30 @@ namespace CreditSystem.Application.Orchestrator
                 var executor = _stepExecutors.FirstOrDefault(e => e.StepType == stepType);
                 if (executor is null)
                 {
-                    _logger.LogError("No executor found for step {StepType}.", stepType);
+                    _logger.LogError("No se encontro ejecutor para el paso {StepType}", stepType);
                     application.UpdateStatus(ApplicationStatus.Faulted);
                     await _repository.UpdateAsync(application, cancellationToken);
                     return;
                 }
 
                 var processStep = ProcessStep.Create(applicationId, stepType);
-                application.AddStep(processStep);
 
                 try
                 {
-                    _logger.LogInformation("Executing step {StepType} for application {ApplicationId}.", stepType, applicationId);
+                    _logger.LogInformation("Ejecutando paso {StepType} para la solicitud {ApplicationId}", stepType, applicationId);
 
                     var result = await executor.ExecuteAsync(application, cancellationToken);
 
                     if (result.Success)
                     {
                         processStep.MarkAsCompleted();
+                        await _repository.AddStepAsync(processStep, cancellationToken);
                         await _mediator.Publish(new StepCompletedEvent(applicationId, stepType), cancellationToken);
                     }
                     else
                     {
-                        processStep.MarkAsFailed(result.ErrorMessage ?? "Unknown error");
-                        await _mediator.Publish(new StepFailedEvent(applicationId, stepType, result.ErrorMessage ?? "Unknown error"), cancellationToken);
+                        processStep.MarkAsFailed(result.ErrorMessage ?? "Error desconocido");
+                        await _repository.AddStepAsync(processStep, cancellationToken);
 
                         var failureStatus = stepType switch
                         {
@@ -91,13 +91,15 @@ namespace CreditSystem.Application.Orchestrator
 
                         application.UpdateStatus(failureStatus);
                         await _repository.UpdateAsync(application, cancellationToken);
+                        await _mediator.Publish(new StepFailedEvent(applicationId, stepType, result.ErrorMessage ?? "Error desconocido"), cancellationToken);
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Step {StepType} threw an exception for application {ApplicationId}.", stepType, applicationId);
+                    _logger.LogError(ex, "El paso {StepType} lanzo una excepcion para la solicitud {ApplicationId}", stepType, applicationId);
                     processStep.MarkAsFailed(ex.Message);
+                    await _repository.AddStepAsync(processStep, cancellationToken);
                     application.UpdateStatus(ApplicationStatus.Faulted);
                     await _repository.UpdateAsync(application, cancellationToken);
                     return;
@@ -107,7 +109,7 @@ namespace CreditSystem.Application.Orchestrator
             application.UpdateStatus(ApplicationStatus.Approved);
             await _repository.UpdateAsync(application, cancellationToken);
 
-            _logger.LogInformation("Application {ApplicationId} approved successfully.", applicationId);
+            _logger.LogInformation("Solicitud {ApplicationId} aprobada exitosamente", applicationId);
         }
     }
 }

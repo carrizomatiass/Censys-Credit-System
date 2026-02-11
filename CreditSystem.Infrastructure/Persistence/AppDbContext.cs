@@ -30,7 +30,6 @@ namespace CreditSystem.Infrastructure.Persistence
                       .HasForeignKey(s => s.CreditApplicationId)
                       .OnDelete(DeleteBehavior.Cascade);
 
-                
                 entity.Navigation(e => e.Steps)
                       .UsePropertyAccessMode(PropertyAccessMode.Field);
             });

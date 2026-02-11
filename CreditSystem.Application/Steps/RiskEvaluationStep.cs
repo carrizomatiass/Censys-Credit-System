@@ -19,7 +19,7 @@ namespace CreditSystem.Application.Steps
 
             //Simula riesgo basada en monto
             if (application.RequestedAmount > 1_000_000)
-                return new StepResult(false, "Amount exceeds maximum risk threshold.");
+                return new StepResult(false, "El monto excede el maximo de riesgo permitido");
 
             return new StepResult(true);
         }

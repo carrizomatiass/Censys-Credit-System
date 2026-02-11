@@ -17,6 +17,7 @@ namespace CreditSystem.Infrastructure.Persistence
         {
             _context = context;
         }
+
         public async Task<CreditApplication?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.CreditApplications
@@ -32,7 +33,13 @@ namespace CreditSystem.Infrastructure.Persistence
 
         public async Task UpdateAsync(CreditApplication application, CancellationToken cancellationToken = default)
         {
-            _context.CreditApplications.Update(application);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+
+        public async Task AddStepAsync(ProcessStep step, CancellationToken cancellationToken = default)
+        {
+            //guardo directamente el step, ya que el CreditApplication se encuentra trackeado por el contexto
+            await _context.ProcessSteps.AddAsync(step, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
         }
     }

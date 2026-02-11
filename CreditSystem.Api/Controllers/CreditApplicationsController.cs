@@ -30,7 +30,7 @@ namespace CreditSystem.Api.Controllers
                 string.IsNullOrWhiteSpace(request.CustomerId) ||
                 request.RequestedAmount <= 0)
             {
-                return BadRequest("Invalid request data.");
+                return BadRequest("Los datos de la solicitud no son validos");
             }
 
             var command = new CreateCreditApplicationCommand(
@@ -41,7 +41,7 @@ namespace CreditSystem.Api.Controllers
 
             var applicationId = await _mediator.Send(command, cancellationToken);
 
-            // Encola para procesamiento en background
+            //encola procesamiento en background
             await _channel.Writer.WriteAsync(applicationId, cancellationToken);
 
             return AcceptedAtAction(
@@ -60,7 +60,7 @@ namespace CreditSystem.Api.Controllers
             var result = await _mediator.Send(query, cancellationToken);
 
             if (result is null)
-                return NotFound(new { message = $"Credit application {id} not found." });
+                return NotFound(new { message = $"Solicitud de credito {id} no encontrada" });
 
             return Ok(result);
         }

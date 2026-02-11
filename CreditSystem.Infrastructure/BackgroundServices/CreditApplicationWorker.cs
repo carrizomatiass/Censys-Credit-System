@@ -29,13 +29,13 @@ namespace CreditSystem.Infrastructure.BackgroundServices
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("CreditApplicationWorker started.");
+            _logger.LogInformation("Worker de procesamiento de solicitudes iniciado");
 
             await foreach (var applicationId in _channel.Reader.ReadAllAsync(stoppingToken))
             {
                 try
                 {
-                    _logger.LogInformation("Processing application {ApplicationId}.", applicationId);
+                    _logger.LogInformation("Procesando solicitud {ApplicationId}", applicationId);
 
                     using var scope = _scopeFactory.CreateScope();
                     var orchestrator = scope.ServiceProvider.GetRequiredService<CreditApplicationOrchestrator>();
@@ -44,7 +44,7 @@ namespace CreditSystem.Infrastructure.BackgroundServices
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error processing application {ApplicationId}.", applicationId);
+                    _logger.LogError(ex, "Error al procesar la solicitud {ApplicationId}.", applicationId);
                 }
             }
         }

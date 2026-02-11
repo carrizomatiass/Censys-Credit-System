@@ -15,9 +15,10 @@ namespace CreditSystem.Application.Steps
 
         public async Task<StepResult> ExecuteAsync(CreditApplication application, CancellationToken cancellationToken)
         {
+            //simula calculo de condiciones asyn
             await Task.Delay(600, cancellationToken);
 
-            //Simula condiciones 
+            //simula "condiciones" 
             return new StepResult(true);
         }
     }

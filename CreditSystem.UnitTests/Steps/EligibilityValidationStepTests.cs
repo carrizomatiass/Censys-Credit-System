@@ -18,11 +18,34 @@ namespace CreditSystem.UnitTests.Steps
         {
             var application = CreditApplication.Create("John Doe", "CUST-001", 5000);
 
-            var cancellationToken = new CancellationTokenSource().Token;
-            var result = await _step.ExecuteAsync(application, cancellationToken);
+
+            var result = await _step.ExecuteAsync(application, CancellationToken.None);
 
             result.Success.Should().BeTrue();
             result.ErrorMessage.Should().BeNull();
         }
+
+        [Fact]
+        public async Task Execute_ShouldFail_WhenAmountBelowMinimum()
+        {
+            var application = CreditApplication.Create("John Doe", "CUST-001", 500);
+
+            var result = await _step.ExecuteAsync(application, CancellationToken.None);
+
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Contain("minimum threshold");
+        }
+
+        [Fact]
+        public async Task Execute_ShouldFail_WhenCustomerNameIsEmpty()
+        {
+            var application = CreditApplication.Create("", "CUST-001", 5000);
+
+            var result = await _step.ExecuteAsync(application, CancellationToken.None);
+
+            result.Success.Should().BeFalse();
+            result.ErrorMessage.Should().Contain("Customer name");
+        }
+
     }
 }
