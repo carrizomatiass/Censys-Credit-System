@@ -19,11 +19,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CreditSystem.Api\CreditSystem.Api.csproj" />
+    <Using Include="Xunit" />
   </ItemGroup>
 
   <ItemGroup>
-    <Using Include="Xunit" />
+    <ProjectReference Include="..\CreditSystem.Api\CreditSystem.Api.csproj" />
   </ItemGroup>
 
 </Project>
