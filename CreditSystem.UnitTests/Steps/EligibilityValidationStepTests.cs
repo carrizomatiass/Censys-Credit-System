@@ -18,7 +18,6 @@ namespace CreditSystem.UnitTests.Steps
         {
             var application = CreditApplication.Create("John Doe", "CUST-001", 5000);
 
-
             var result = await _step.ExecuteAsync(application, CancellationToken.None);
 
             result.Success.Should().BeTrue();
@@ -33,7 +32,7 @@ namespace CreditSystem.UnitTests.Steps
             var result = await _step.ExecuteAsync(application, CancellationToken.None);
 
             result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("minimum threshold");
+            result.ErrorMessage.Should().Contain("monto solicitado");
         }
 
         [Fact]
@@ -44,8 +43,7 @@ namespace CreditSystem.UnitTests.Steps
             var result = await _step.ExecuteAsync(application, CancellationToken.None);
 
             result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("Customer name");
+            result.ErrorMessage.Should().Contain("nombre del cliente");
         }
-
     }
 }

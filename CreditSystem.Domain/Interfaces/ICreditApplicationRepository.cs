@@ -10,8 +10,10 @@ namespace CreditSystem.Domain.Interfaces
     public interface ICreditApplicationRepository
     {
         Task<CreditApplication?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<IReadOnlyList<CreditApplication>> GetAllAsync(CancellationToken cancellationToken = default);
         Task AddAsync(CreditApplication application, CancellationToken cancellationToken = default);
         Task UpdateAsync(CreditApplication application, CancellationToken cancellationToken = default);
         Task AddStepAsync(ProcessStep step, CancellationToken cancellationToken = default);
+
     }
 }
