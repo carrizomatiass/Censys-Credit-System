@@ -24,6 +24,13 @@ namespace CreditSystem.Infrastructure.Persistence
                 .Include(a => a.Steps)
                 .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
         }
+        public async Task<IReadOnlyList<CreditApplication>> GetAllAsync(CancellationToken cancellationToken = default)
+        {
+            return await _context.CreditApplications
+                .Include(a => a.Steps)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync(cancellationToken);
+        }
 
         public async Task AddAsync(CreditApplication application, CancellationToken cancellationToken = default)
         {

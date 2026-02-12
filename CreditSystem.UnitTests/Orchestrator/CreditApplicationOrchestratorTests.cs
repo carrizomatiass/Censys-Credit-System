@@ -164,5 +164,26 @@ namespace CreditSystem.UnitTests.Orchestrator
                 return step;
             });
         }
+
+        [Fact]
+        public async Task ProcessApplication_ShouldReprocess_WhenRetryPending()
+        {
+            // Arrange
+            var application = CreditApplication.Create("John Doe", "CUST-001", 50000);
+            application.UpdateStatus(ApplicationStatus.RetryPending);
+
+            _repository.GetByIdAsync(application.Id, Arg.Any<CancellationToken>())
+                .Returns(application);
+
+            var steps = CreateSuccessfulSteps();
+            var orchestrator = CreateOrchestrator(steps);
+
+            // Act
+            await orchestrator.ProcessApplicationAsync(application.Id);
+
+            // Assert
+            application.Status.Should().Be(ApplicationStatus.Approved);
+            await _repository.Received(4).AddStepAsync(Arg.Any<ProcessStep>(), Arg.Any<CancellationToken>());
+        }
     }
 }

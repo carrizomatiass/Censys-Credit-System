@@ -1,5 +1,7 @@
 ﻿using CreditSystem.Api.Contracts;
 using CreditSystem.Application.Commands.CreateCreditApplication;
+using CreditSystem.Application.Commands.RetryCreditApplication;
+using CreditSystem.Application.Queries.GetAllCreditApplications;
 using CreditSystem.Application.Queries.GetCreditApplication;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -51,6 +53,16 @@ namespace CreditSystem.Api.Controllers
             );
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+        {
+            var query = new GetAllCreditApplicationsQuery();
+            var result = await _mediator.Send(query, cancellationToken);
+
+            return Ok(result);
+        }
+
         [HttpGet("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -63,6 +75,35 @@ namespace CreditSystem.Api.Controllers
                 return NotFound(new { message = $"Solicitud de credito {id} no encontrada" });
 
             return Ok(result);
+        }
+
+        [HttpPost("{id:guid}/retry")]
+        [ProducesResponseType(StatusCodes.Status202Accepted)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> Retry(Guid id, CancellationToken cancellationToken)
+        {
+            var command = new RetryCreditApplicationCommand(id);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            if (!result)
+            {
+                var application = await _mediator.Send(new GetCreditApplicationQuery(id), cancellationToken);
+
+                if (application is null)
+                    return NotFound(new { message = $"Solicitud de credito {id} no encontrada" });
+
+                return Conflict(new { message = $"La solicitud no se puede reintentar en estado '{application.Status}'." });
+            }
+
+            //re encolar para procesamiento en background
+            await _channel.Writer.WriteAsync(id, cancellationToken);
+
+            return AcceptedAtAction(
+                nameof(GetById),
+                new { id },
+                new { id, status = "RetryPending" }
+            );
         }
     }
 }

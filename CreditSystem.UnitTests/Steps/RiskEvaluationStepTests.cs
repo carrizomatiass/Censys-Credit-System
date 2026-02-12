@@ -21,7 +21,6 @@ namespace CreditSystem.UnitTests.Steps
             var result = await _step.ExecuteAsync(application, CancellationToken.None);
 
             result.Success.Should().BeTrue();
-
         }
 
         [Fact]
@@ -32,7 +31,7 @@ namespace CreditSystem.UnitTests.Steps
             var result = await _step.ExecuteAsync(application, CancellationToken.None);
 
             result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("maximum risk threshold");
+            result.ErrorMessage.Should().Contain("monto excede");
         }
     }
 }
